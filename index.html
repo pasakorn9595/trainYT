@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Trend Tracker</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Prompt', 'sans-serif'],
+                    },
+                    colors: {
+                        yt: '#FF0000',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Prompt', sans-serif; }
+        /* Hide scrollbar for a cleaner look */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-10">
+        <div class="max-w-5xl mx-auto px-4 py-4 flex items-center gap-3">
+            <div class="bg-yt text-white p-2 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <h1 class="text-xl font-bold text-gray-900">YT Trend Tracker</h1>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 py-6 md:py-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Left Column: Form -->
+        <div class="lg:col-span-1 space-y-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 md:p-6">
+                <h2 class="text-lg font-semibold mb-4">📝 บันทึกข้อมูลคลิป</h2>
+                <form id="contentForm" class="space-y-4">
+                    <div>
+                        <label class="block text-sm text-gray-600 mb-1">ชื่อคลิป / หัวข้อ</label>
+                        <input type="text" id="title" required class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-yt focus:border-transparent transition-all" placeholder="เช่น Vlog เที่ยวญี่ปุ่น">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm text-gray-600 mb-1">ประเภทคอนเทนต์</label>
+                        <select id="category" required class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-yt focus:border-transparent transition-all bg-white">
+                            <option value="">-- เลือกประเภท --</option>
+                            <option value="Vlog / ไลฟ์สไตล์">Vlog / ไลฟ์สไตล์</option>
+                            <option value="ความรู้ / How-to">ความรู้ / How-to</option>
+                            <option value="รีวิวสินค้า / Tech">รีวิวสินค้า / Tech</option>
+                            <option value="เกมมิ่ง / สตรีม">เกมมิ่ง / สตรีม</option>
+                            <option value="บันเทิง / ตลก">บันเทิง / ตลก</option>
+                            <option value="พอดแคสต์ / คุย">พอดแคสต์ / คุย</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1">ยอดวิว</label>
+                            <input type="number" id="views" min="0" required class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-yt focus:border-transparent transition-all" placeholder="0">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-600 mb-1">ยอดไลก์</label>
+                            <input type="number" id="likes" min="0" required class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-yt focus:border-transparent transition-all" placeholder="0">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-yt hover:bg-red-700 text-white font-medium py-3 rounded-xl transition-all shadow-md hover:shadow-lg active:scale-95 flex justify-center items-center gap-2">
+                        <span>บันทึกข้อมูล</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Right Column: Analytics & List -->
+        <div class="lg:col-span-2 space-y-6">
+            
+            <!-- Dashboard Stats -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Best Category -->
+                <div class="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-5 text-white shadow-md relative overflow-hidden">
+                    <div class="relative z-10">
+                        <p class="text-sm text-gray-300 font-medium mb-1">🏆 หมวดหมู่ที่ปังที่สุด (เฉลี่ยวิวสูงสุด)</p>
+                        <h3 id="bestCategory" class="text-xl md:text-2xl font-bold truncate">-</h3>
+                        <p id="bestCategoryViews" class="text-sm text-gray-400 mt-2">0 วิวเฉลี่ย</p>
+                    </div>
+                    <!-- Decor icon -->
+                    <div class="absolute -right-4 -bottom-4 opacity-10">
+                        <svg class="w-32 h-32" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A120.18 120.18 0 0010 1c-1.38 0-2.73.102-4.048.293-1.07.155-1.952.92-2.31 1.95l-1.066 3.097c-.328.953.255 1.942 1.258 2.052A120.316 120.316 0 0010 8.5c1.38 0 2.73-.102 4.048-.293 1.003-.11 1.586-1.099 1.258-2.052l-1.066-3.097c-.358-1.03-1.24-1.795-2.31-1.95zM10 11.5c-1.737 0-3.435.155-5.076.452-.924.167-1.464 1.109-1.306 2.02l.745 4.305c.168.969 1.036 1.636 2.019 1.587A111.458 111.458 0 0010 19.5c1.236 0 2.457-.042 3.618-.136.983-.049 1.85-.718 2.019-1.587l.745-4.305c.158-.91-.382-1.853-1.306-2.02A118.423 118.423 0 0010 11.5z" clip-rule="evenodd"></path></svg>
+                    </div>
+                </div>
+
+                <!-- Total Stats -->
+                <div class="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
+                    <p class="text-sm text-gray-500 font-medium mb-1">📊 สถิติรวมทั้งหมด</p>
+                    <div class="flex items-baseline gap-2 mt-2">
+                        <h3 id="totalViews" class="text-2xl font-bold text-gray-900">0</h3>
+                        <span class="text-sm text-gray-500">วิวรวม</span>
+                    </div>
+                    <div class="mt-3 flex gap-4 text-sm">
+                        <div class="text-gray-600">❤️ <span id="totalLikes" class="font-semibold text-gray-900">0</span> ไลก์</div>
+                        <div class="text-gray-600">📹 <span id="totalVideos" class="font-semibold text-gray-900">0</span> คลิป</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- List Section -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 md:p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-semibold">ประวัติคลิปที่บันทึก</h2>
+                    <button onclick="clearData()" class="text-sm text-red-500 hover:text-red-700 transition-colors">ล้างข้อมูลทั้งหมด</button>
+                </div>
+                
+                <!-- Items Container -->
+                <div id="videoList" class="space-y-3 max-h-[400px] overflow-y-auto pr-2">
+                    <!-- Data will be injected here via JS -->
+                    <div class="text-center py-8 text-gray-400 text-sm" id="emptyState">
+                        ยังไม่มีข้อมูลคลิป ลองเพิ่มข้อมูลด้านซ้ายดูสิ!
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </main>
+
+    <script>
+        // 1. กำหนด State (โหลดจาก LocalStorage ถ้ามี)
+        let videos = JSON.parse(localStorage.getItem('ytTrendsData')) || [];
+
+        // 2. DOM Elements
+        const form = document.getElementById('contentForm');
+        const videoListEl = document.getElementById('videoList');
+        const emptyStateEl = document.getElementById('emptyState');
+        
+        // Stats Elements
+        const bestCategoryEl = document.getElementById('bestCategory');
+        const bestCategoryViewsEl = document.getElementById('bestCategoryViews');
+        const totalViewsEl = document.getElementById('totalViews');
+        const totalLikesEl = document.getElementById('totalLikes');
+        const totalVideosEl = document.getElementById('totalVideos');
+
+        // 3. ฟังก์ชันอัปเดต UI 
+        function updateUI() {
+            renderList();
+            calculateStats();
+        }
+
+        // 4. บันทึกข้อมูล
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const newVideo = {
+                id: Date.now().toString(),
+                title: document.getElementById('title').value,
+                category: document.getElementById('category').value,
+                views: parseInt(document.getElementById('views').value),
+                likes: parseInt(document.getElementById('likes').value),
+                date: new Date().toLocaleDateString('th-TH')
+            };
+
+            videos.unshift(newVideo); // เพิ่มไว้บนสุด
+            saveData();
+            
+            // รีเซ็ตฟอร์ม
+            form.reset();
+        });
+
+        // 5. เซฟลง LocalStorage และเรียกอัปเดต UI
+        function saveData() {
+            localStorage.setItem('ytTrendsData', JSON.stringify(videos));
+            updateUI();
+        }
+
+        // 6. ลบข้อมูลทีละรายการ
+        function deleteVideo(id) {
+            if(confirm('ต้องการลบข้อมูลนี้ใช่หรือไม่?')) {
+                videos = videos.filter(v => v.id !== id);
+                saveData();
+            }
+        }
+
+        // 7. ล้างข้อมูลทั้งหมด
+        function clearData() {
+            if(videos.length > 0 && confirm('ต้องการลบข้อมูลทั้งหมดใช่หรือไม่? (ไม่สามารถกู้คืนได้)')) {
+                videos = [];
+                saveData();
+            }
+        }
+
+        // 8. ฟังก์ชันจัดการการแสดงผลรายการ
+        function renderList() {
+            videoListEl.innerHTML = '';
+            
+            if (videos.length === 0) {
+                videoListEl.innerHTML = `<div class="text-center py-8 text-gray-400 text-sm">ยังไม่มีข้อมูลคลิป เริ่มบันทึกเพื่อวิเคราะห์เทรนด์เลย!</div>`;
+                return;
+            }
+
+            videos.forEach(video => {
+                const item = document.createElement('div');
+                item.className = 'p-4 rounded-xl border border-gray-100 bg-gray-50/50 hover:bg-white transition-colors group relative flex justify-between items-center';
+                item.innerHTML = `
+                    <div class="flex-1 min-w-0 pr-4">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-700 text-xs font-medium">${video.category}</span>
+                            <span class="text-xs text-gray-400">${video.date}</span>
+                        </div>
+                        <h4 class="font-medium text-gray-900 truncate">${video.title}</h4>
+                        <div class="flex gap-4 mt-1.5 text-sm">
+                            <span class="text-gray-600">👁️ ${video.views.toLocaleString()}</span>
+                            <span class="text-gray-600">❤️ ${video.likes.toLocaleString()}</span>
+                        </div>
+                    </div>
+                    <button onclick="deleteVideo('${video.id}')" class="text-gray-400 hover:text-red-500 p-2 rounded-lg hover:bg-red-50 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                `;
+                videoListEl.appendChild(item);
+            });
+        }
+
+        // 9. คำนวณสถิติ
+        function calculateStats() {
+            if (videos.length === 0) {
+                bestCategoryEl.innerText = '-';
+                bestCategoryViewsEl.innerText = '0 วิวเฉลี่ย';
+                totalViewsEl.innerText = '0';
+                totalLikesEl.innerText = '0';
+                totalVideosEl.innerText = '0';
+                return;
+            }
+
+            // สถิติรวม
+            const sumViews = videos.reduce((acc, curr) => acc + curr.views, 0);
+            const sumLikes = videos.reduce((acc, curr) => acc + curr.likes, 0);
+            
+            totalViewsEl.innerText = sumViews.toLocaleString();
+            totalLikesEl.innerText = sumLikes.toLocaleString();
+            totalVideosEl.innerText = videos.length.toLocaleString();
+
+            // คำนวณหา "หมวดหมู่ที่ดีที่สุด" โดยใช้ค่าเฉลี่ยยอดวิว
+            const categoryStats = {};
+            videos.forEach(v => {
+                if(!categoryStats[v.category]) {
+                    categoryStats[v.category] = { totalViews: 0, count: 0 };
+                }
+                categoryStats[v.category].totalViews += v.views;
+                categoryStats[v.category].count += 1;
+            });
+
+            let bestCat = '-';
+            let maxAvgViews = 0;
+
+            for (const cat in categoryStats) {
+                const avgViews = categoryStats[cat].totalViews / categoryStats[cat].count;
+                if (avgViews > maxAvgViews) {
+                    maxAvgViews = avgViews;
+                    bestCat = cat;
+                }
+            }
+
+            bestCategoryEl.innerText = bestCat;
+            bestCategoryViewsEl.innerText = `เฉลี่ย ${Math.round(maxAvgViews).toLocaleString()} วิว / คลิป`;
+        }
+
+        // Initialize UI ตอนโหลดหน้าแรก
+        updateUI();
+
+    </script>
+</body>
+</html>
